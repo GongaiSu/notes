@@ -313,3 +313,85 @@ GET_FORMAT函数中date_type和format_type参数取值如下：
   * 如果在子查询中满足条件返回true，停止查询
   * 如果在子查询中不满足条件返回false，继续查询
 * NOT EXISTS ：和EXISTS相反
+
+# 数据库的创建
+
+## 管理数据库
+
+* create database if not exists 库名 character set 'utf8'(推荐使用，如果数据库存在，则执行不成功，但不报错)
+* Show databases : 查看当前所有的数据库
+* use 库名：使用数据库
+* Show create database 库名：查看创建数据库的结构
+* show tables ：查看当前数据库下所有的表
+* show database() from dual :查看当前使用的数据库
+* show tables from 库名：查看指定数据库下保存的数据表～
+
+## 修改数据库
+
+* alter database 库名 character set 'utf8'
+
+## 删除数据库
+
+* Drop database if exists 库名
+
+# 数据表的创建
+
+## 数据类型
+
+| 类型             | 类型举例                                                     |
+| ---------------- | ------------------------------------------------------------ |
+| 整数类型         | TINYINT、SMALLINT、MEDIUMINT、**INT(或INTEGER)**、BIGINT     |
+| 浮点类型         | FLOAT、DOUBLE                                                |
+| 定点数类型       | **DECIMAL**                                                  |
+| 位类型           | BIT                                                          |
+| 日期时间类型     | YEAR、TIME、**DATE**、DATETIME、TIMESTAMP                    |
+| 文本字符串类型   | CHAR、**VARCHAR**、TINYTEXT、TEXT、MEDIUMTEXT、LONGTEXT      |
+| 枚举类型         | ENUM                                                         |
+| 集合类型         | SET                                                          |
+| 二进制字符串类型 | BINARY、VARBINARY、TINYBLOB、BLOB、MEDIUMBLOB、LONGBLOB      |
+| JSON类型         | JSON对象、JSON数组                                           |
+| 空间数据类型     | 单值：GEOMETRY、POINT、LINESTRING、POLYGON；<br/>集合：MULTIPOINT、MULTILINESTRING、MULTIPOLYGON、GEOMETRYCOLLECTION |
+
+其中，常用的几类类型介绍如下：
+
+| 数据类型      | 描述                                                         |
+| ------------- | ------------------------------------------------------------ |
+| INT           | 从-2^31到2^31-1的整型数据。存储大小为 4个字节                |
+| CHAR(size)    | 定长字符数据。若未指定，默认为1个字符，最大长度255           |
+| VARCHAR(size) | 可变长字符数据，根据字符串实际长度保存，**必须指定长度**     |
+| FLOAT(M,D)    | 单精度，占用4个字节，M=整数位+小数位，D=小数位。 D<=M<=255,0<=D<=30，默认M+D<=6 |
+| DOUBLE(M,D)   | 双精度，占用8个字节，D<=M<=255,0<=D<=30，默认M+D<=15         |
+| DECIMAL(M,D)  | 高精度小数，占用M+2个字节，D<=M<=65，0<=D<=30，最大取值范围与DOUBLE相同。 |
+| DATE          | 日期型数据，格式'YYYY-MM-DD'                                 |
+| BLOB          | 二进制形式的长文本数据，最大可达4G                           |
+| TEXT          | 长文本数据，最大可达4G                                       |
+
+## 创建表
+
+* create table if not exists 表名(字段)
+* show CREATE TABLE 表名 : 查看创建表的语句
+* 基于现有的表创建
+  * Create table 表名 as 查询语句
+  * 查询语句中的别名可以作为新表中的字段名
+
+## 修改表
+
+* 添加字段:alter table 表名 add 字段 
+  * First:添加到最前面
+  * after 字段名：添加的这个字段后面
+* 修改字段:alter table 表名 modify 要修改的字段
+* 重命名字段：alter table 表名 change 旧字段 新字段 类型
+  * 在重命名时可以修改字段的类型
+* 删除字段 alter table 表名 drop column 字段名
+
+## 重命名表
+
+* renmae table 就表名 to 新表名
+
+## 删除表明
+
+* drop table If exists 表名
+
+## 清空表
+
+* TRUNCATE TABLE 表名
