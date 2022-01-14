@@ -314,7 +314,7 @@ GET_FORMAT函数中date_type和format_type参数取值如下：
   * 如果在子查询中不满足条件返回false，继续查询
 * NOT EXISTS ：和EXISTS相反
 
-# 数据库的创建
+# 数据库的操作
 
 ## 管理数据库
 
@@ -334,37 +334,7 @@ GET_FORMAT函数中date_type和format_type参数取值如下：
 
 * Drop database if exists 库名
 
-# 数据表的创建
-
-## 数据类型
-
-| 类型             | 类型举例                                                     |
-| ---------------- | ------------------------------------------------------------ |
-| 整数类型         | TINYINT、SMALLINT、MEDIUMINT、**INT(或INTEGER)**、BIGINT     |
-| 浮点类型         | FLOAT、DOUBLE                                                |
-| 定点数类型       | **DECIMAL**                                                  |
-| 位类型           | BIT                                                          |
-| 日期时间类型     | YEAR、TIME、**DATE**、DATETIME、TIMESTAMP                    |
-| 文本字符串类型   | CHAR、**VARCHAR**、TINYTEXT、TEXT、MEDIUMTEXT、LONGTEXT      |
-| 枚举类型         | ENUM                                                         |
-| 集合类型         | SET                                                          |
-| 二进制字符串类型 | BINARY、VARBINARY、TINYBLOB、BLOB、MEDIUMBLOB、LONGBLOB      |
-| JSON类型         | JSON对象、JSON数组                                           |
-| 空间数据类型     | 单值：GEOMETRY、POINT、LINESTRING、POLYGON；<br/>集合：MULTIPOINT、MULTILINESTRING、MULTIPOLYGON、GEOMETRYCOLLECTION |
-
-其中，常用的几类类型介绍如下：
-
-| 数据类型      | 描述                                                         |
-| ------------- | ------------------------------------------------------------ |
-| INT           | 从-2^31到2^31-1的整型数据。存储大小为 4个字节                |
-| CHAR(size)    | 定长字符数据。若未指定，默认为1个字符，最大长度255           |
-| VARCHAR(size) | 可变长字符数据，根据字符串实际长度保存，**必须指定长度**     |
-| FLOAT(M,D)    | 单精度，占用4个字节，M=整数位+小数位，D=小数位。 D<=M<=255,0<=D<=30，默认M+D<=6 |
-| DOUBLE(M,D)   | 双精度，占用8个字节，D<=M<=255,0<=D<=30，默认M+D<=15         |
-| DECIMAL(M,D)  | 高精度小数，占用M+2个字节，D<=M<=65，0<=D<=30，最大取值范围与DOUBLE相同。 |
-| DATE          | 日期型数据，格式'YYYY-MM-DD'                                 |
-| BLOB          | 二进制形式的长文本数据，最大可达4G                           |
-| TEXT          | 长文本数据，最大可达4G                                       |
+# 数据表的操作
 
 ## 创建表
 
@@ -395,3 +365,70 @@ GET_FORMAT函数中date_type和format_type参数取值如下：
 ## 清空表
 
 * TRUNCATE TABLE 表名
+* delete from 表名
+  * 相同，都可以进行清空数据
+  * 不同
+    * TRUNCATE TABLE：一旦操作，数据全部清楚，不可能回滚
+    * delete from：不带where，可以清空全部数据，但是可以回滚
+
+## 其他操作
+
+* commit：提交数据，一旦commit操作后就没有办法回滚
+* rollback：回滚数据，一旦执行rollback操作，则可以实现数据回滚，但不一定回滚成功。回滚到最近一次commit之后。 
+
+# 数据的操作
+
+## 添加数据
+
+*  insetr into 表名(字段…) valuse (值…) 
+
+## 更新数据
+
+* update 表名 set 修改的字段名 where 修改的条件
+
+## 删除数据
+
+* delete from 表名 where 条件
+
+# 数据类型
+
+| 类型             | 类型举例                                                     |
+| ---------------- | ------------------------------------------------------------ |
+| 整数类型         | TINYINT、SMALLINT、MEDIUMINT、**INT(或INTEGER)**、BIGINT     |
+| 浮点类型         | FLOAT、DOUBLE                                                |
+| 定点数类型       | **DECIMAL**                                                  |
+| 位类型           | BIT                                                          |
+| 日期时间类型     | YEAR、TIME、**DATE**、DATETIME、TIMESTAMP                    |
+| 文本字符串类型   | CHAR、**VARCHAR**、TINYTEXT、TEXT、MEDIUMTEXT、LONGTEXT      |
+| 枚举类型         | ENUM                                                         |
+| 集合类型         | SET                                                          |
+| 二进制字符串类型 | BINARY、VARBINARY、TINYBLOB、BLOB、MEDIUMBLOB、LONGBLOB      |
+| JSON类型         | JSON对象、JSON数组                                           |
+| 空间数据类型     | 单值：GEOMETRY、POINT、LINESTRING、POLYGON；<br/>集合：MULTIPOINT、MULTILINESTRING、MULTIPOLYGON、GEOMETRYCOLLECTION |
+
+其中，常用的几类类型介绍如下：
+
+| 数据类型      | 描述                                                         |
+| ------------- | ------------------------------------------------------------ |
+| INT           | 从-2^31到2^31-1的整型数据。存储大小为 4个字节                |
+| CHAR(size)    | 定长字符数据。若未指定，默认为1个字符，最大长度255           |
+| VARCHAR(size) | 可变长字符数据，根据字符串实际长度保存，**必须指定长度**     |
+| FLOAT(M,D)    | 单精度，占用4个字节，M=整数位+小数位，D=小数位。 D<=M<=255,0<=D<=30，默认M+D<=6 |
+| DOUBLE(M,D)   | 双精度，占用8个字节，D<=M<=255,0<=D<=30，默认M+D<=15         |
+| DECIMAL(M,D)  | 高精度小数，占用M+2个字节，D<=M<=65，0<=D<=30，最大取值范围与DOUBLE相同。 |
+| DATE          | 日期型数据，格式'YYYY-MM-DD'                                 |
+| BLOB          | 二进制形式的长文本数据，最大可达4G                           |
+| TEXT          | 长文本数据，最大可达4G                                       |
+
+常见数据类型的属性，如下：
+
+| MySQL关键字        | 含义                     |
+| ------------------ | ------------------------ |
+| NULL               | 数据列可包含NULL值       |
+| NOT NULL           | 数据列不允许包含NULL值   |
+| DEFAULT            | 默认值                   |
+| PRIMARY KEY        | 主键                     |
+| AUTO_INCREMENT     | 自动递增，适用于整数类型 |
+| UNSIGNED           | 无符号                   |
+| CHARACTER SET name | 指定一个字符集           |
+
