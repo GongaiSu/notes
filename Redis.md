@@ -2,6 +2,52 @@
 
 ## 安装
 
+* 安装C 语言
+
+  * **yum** **ins****tall centos-release-scl scl-utils-build**
+
+    **yum install -y devtoolset-8-toolchain**
+
+    **scl enable devtoolset-8 bash**
+
+* 下载redis-6.2.1.tar.gz放/opt目录
+
+* 解压命令：tar -zxvf redis-6.2.1.tar.gz
+
+* 解压完成后进入目录：cd redis-6.2.1
+
+* 在redis-6.2.1目录下再次执行make命令
+
+* 如果没有准备好C语言编译环境，make 会报错—Jemalloc/jemalloc.h：没有那个文件
+
+  * 解决方案：运行make distclean
+
+* 在redis目录下再次执行make命令
+
+* 跳过make test 继续执行: make install
+
+* 安装目录：/usr/local/bin
+
+* 启动(推荐使用后台启动)
+
+  * 备份redis.con
+
+  * 拷贝一份redis.conf到其他目录
+
+    cp /opt/redis-3.2.5/redis.conf /myredis
+
+  * 修改redis.conf(128行)文件将里面的daemonize no 改成 yes，让服务在后台启动
+
+  * redis-server/myredis/redis.conf
+
+* 客户端访问
+
+  * redis-cli -p6379
+
+* 关闭
+
+  * 登陆后：shutdown
+
 ## 数据类型
 
 ### 通用命令
@@ -17,6 +63,7 @@
 * flushdb：删除redis库
 * flushall：删除所有的redis库
 * info:查看信息
+* select :切换数据库0-15
 
 ### Redis为什么怎么快
 
@@ -101,4 +148,26 @@ pop为取出   数据，push为放入数据
 
 #### 常用API
 
- 
+* sadd:将一个或多个值加入到集合 `key` 当中，已经存在于集合的值将被忽略。【sadd s1 gyf】
+* Dismember key member[值]:判断`menber`元素是否是集和`key`中的值
+* spop key:随机删除一个元素，并返回给前端
+* srandmember
+  * srandmember key:随机返回一个元素
+  * srandmember key count[正整数]:随机返回count个元素，元素不重复，如果count个数大于key中的个数，则返回整个key集合。
+  * srandmember key count[负整数]:随机返回count个元素，元素可能重复，如果count个数大于key中的个数，则返回count个元素必有重复元素。
+  * srandmember key count[0]:不返回元素
+  * 集合为空时则返回nil 或者空数组
+* srem key member…[值1,值2…]：删除一个或多个元素，元素不存在则被忽略
+* smove key1 key2 member:将member从key1移动到key2中，member从key1中移除，并添加到key2中
+  * 如果key1中没有元素member则不进行任何操作，返回0
+  * 如果key2不存在，这返回0
+  * 如果key2中存在元素member，这是将key1中的member删除。
+* scard key:返回集合key中的元素个数，如果key不存在则返回0
+* smembers key:返回集合key中的所有元素
+* sscan
+* sinter [key1,key2...]:返回key1,key2...中共同的部分【交集】，只有一个key，则返回这个key中所有的元素
+* sinterstore key [key1,key2...]:将key1,key2...中共同的部分【交集】保存到key中，如果key存在，则将其覆盖
+* sunion [key1,key2...]:返回key1和key2...中所有的元素【并集】，只有一个key，则返回这个key中所有的元素
+* sunionstore key [key1,key2...]:将key1和key2...中所有的元素【并集】保存到key中，如果key存在，则将其覆盖
+* sdiff [key1,key2]:返回key1和key2...中相互之间不同的元素【差集】，只有一个key，则返回这个key中所有的元素
+* sdiffstore key [key1,key2...]:将key1和key2...中相互之间不同的元素【差集】保存到key中，如果key存在，则将其覆盖
