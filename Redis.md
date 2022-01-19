@@ -171,3 +171,32 @@ pop为取出   数据，push为放入数据
 * sunionstore key [key1,key2...]:将key1和key2...中所有的元素【并集】保存到key中，如果key存在，则将其覆盖
 * sdiff [key1,key2]:返回key1和key2...中相互之间不同的元素【差集】，只有一个key，则返回这个key中所有的元素
 * sdiffstore key [key1,key2...]:将key1和key2...中相互之间不同的元素【差集】保存到key中，如果key存在，则将其覆盖
+
+### Zset类型
+
+#### 常用API
+
+* zadd key score member:将一个带有分数的member添加到key中，如果member存在score不同则会修改分数前端返回0；score可以为整型或双精度浮点型
+* zscore key member:返回当前key中member的分数，如果key或者member不存在则返回nil
+* zincrby key 数值 member:给key中的member值的分数增加对应的数值的量，如果数值为负数，则是减少。
+* zcard key:返回key中的值的个数
+* zcount key min max:返回key中分数在min到max之间值的个数(包含分数最大值和最小值)
+* zrange key start stop:返回key中从start到stop的值，值的顺序是按照分数的大小递增(从小到大)；
+  * 下标参数 `start` 和 `stop` 都以 `0` 为底，也就是说，以 `0` 表示有序集第一个成员，以 `1` 表示有序集第二个成员，以此类推。 你也可以使用负数下标，以 `-1` 表示最后一个成员， `-2` 表示倒数第二个成员，以此类推。
+  * 分数相同，member也按照从小到大排序
+* zrevrange key start stop:返回key中从start到stop的值，值的顺序是按照分数的大小递减(从大到小)；分数相同，member也按照从大到小排序
+* zrangebysocre key min max: 返回key中分数在min到max之间值(包含分数max和min)，值的顺序是按照分数的大小递增(从小到大)；
+  * `min` 和 `max` 可以是 `-inf` 和 `+inf`表示无穷小到无穷大。
+  * 区间的取值使用[闭区间](http://zh.wikipedia.org/wiki/區間) (小于等于或大于等于)，你也可以通过给参数前增加 `(` 符号来使用可选的[开区间](http://zh.wikipedia.org/wiki/區間) (小于或大于)。
+  * `WITHSCORES`:在最后添加这个显示分数是多少
+* zrevrangebyscore key max min: 返回key中分数在max到min之间值(包含分数max和min)，值的顺序是按照分数的大小递减(从大到小)
+  * `min` 和 `max` 可以是 `-inf` 和 `+inf`表示无穷小到无穷大。
+  * 区间的取值使用[闭区间](http://zh.wikipedia.org/wiki/區間) (小于等于或大于等于)，你也可以通过给参数前增加 `(` 符号来使用可选的[开区间](http://zh.wikipedia.org/wiki/區間) (小于或大于)。
+  * `WITHSCORES`:在最后添加这个显示分数是多少
+* zrank key member:返回key中member的排名，按照成员的分数值进行递增(从小到大)；返回的值是以0开始。
+* zrevrank key member:返回key中member的排名，按照成员的分数值进行递减(从大到小)；返回的值是以0开始
+* zrem key member:删除key中的member，返回删除member的数量
+* zremrangebyrank key start stop:删除key中从start到stop的值(包含start，stop)
+  * 下标参数 `start` 和 `stop` 都以 `0` 为底，也就是说，以 `0` 表示有序集第一个成员，以 `1` 表示有序集第二个成员，以此类推。 你也可以使用负数下标，以 `-1` 表示最后一个成员， `-2` 表示倒数第二个成员，以此类推。
+* zremrangebyscore key min max:删除key中分数在min到max之间值(包含分数max和min)
+* zrangebylex key min max:
