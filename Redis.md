@@ -149,7 +149,7 @@ pop为取出   数据，push为放入数据
 #### 常用API
 
 * sadd:将一个或多个值加入到集合 `key` 当中，已经存在于集合的值将被忽略。【sadd s1 gyf】
-* Dismember key member[值]:判断`menber`元素是否是集和`key`中的值
+* sismember key member[值]:判断`menber`元素是否是集和`key`中的值
 * spop key:随机删除一个元素，并返回给前端
 * srandmember
   * srandmember key:随机返回一个元素
@@ -199,4 +199,86 @@ pop为取出   数据，push为放入数据
 * zremrangebyrank key start stop:删除key中从start到stop的值(包含start，stop)
   * 下标参数 `start` 和 `stop` 都以 `0` 为底，也就是说，以 `0` 表示有序集第一个成员，以 `1` 表示有序集第二个成员，以此类推。 你也可以使用负数下标，以 `-1` 表示最后一个成员， `-2` 表示倒数第二个成员，以此类推。
 * zremrangebyscore key min max:删除key中分数在min到max之间值(包含分数max和min)
-* zrangebylex key min max:
+
+### 发布与订阅
+
+* subscribe channel:订阅频道，可以订阅多个频道。
+* psubscribe pattern:订阅模式，模式以`*`作为匹配符，例如it开头的模式，如it.news。it.*则是订阅所有以it.开头的所有频道。
+* publish channel or pattern member;发布消息member给channel频道或pattern模式的频道。
+* 退订频道需要查询一下。
+
+### Bitmaps类型
+
+* 本身不是有一种数据类型，实际上就是字符串，但是它可以对字符串的位进行操作。
+
+#### 常用API
+
+* setbit key offset value:
+  * 对 `key` 所储存的字符串值，设置或清除指定偏移量上的位(bit)。
+  * 位的设置或清除取决于 `value` 参数，可以是 `0` 也可以是 `1` 。
+  * 当 `key` 不存在时，自动生成一个新的字符串值。
+  * 字符串会进行伸展(grown)以确保它可以将 `value` 保存在指定的偏移量上。当字符串值进行伸展时，空白位置以 `0` 填充。
+  * `offset` 参数必须大于或等于 `0` ，小于 2^32 (bit 映射被限制在 512 MB 之内)。
+* setbit key offset:
+  * 对 `key` 所储存的字符串值，获取指定偏移量上的位(bit)。
+  * 当 `offset` 比字符串值的长度大，或者 `key` 不存在时，返回 `0` 。
+  * 字符串值指定偏移量上的位(bit)。
+* bitcount key:返回可以偏移量上为`1`的个数。
+* bitpos key bit :返回位图中第一个值为 `bit` 的二进制位的位置。
+* BITOP operation destkey key [key …]:对一个或多个保存二进制位的字符串 `key` 进行位元操作，并将结果保存到 `destkey` 上。
+  * `operation` 可以是 `AND` 、 `OR` 、 `NOT` 、 `XOR` 这四种操作中的任意一种：
+    - `BITOP AND destkey key [key ...]` ，对一个或多个 `key` 求逻辑并，并将结果保存到 `destkey` 。
+    - `BITOP OR destkey key [key ...]` ，对一个或多个 `key` 求逻辑或，并将结果保存到 `destkey` 。
+    - `BITOP XOR destkey key [key ...]` ，对一个或多个 `key` 求逻辑异或，并将结果保存到 `destkey` 。
+    - `BITOP NOT destkey key` ，对给定 `key` 求逻辑非，并将结果保存到 `destkey` 。
+  * 除了 `NOT` 操作之外，其他操作都可以接受一个或多个 `key` 作为输入。
+
+### Hyperloglog类型
+
+* 基数:不重复的元素
+
+#### 常用API
+
+* pfadd key element：给key中添加值，重复值不添加返回0
+* pfcount key:返回key中的元素个数
+* pfmerge destkey key1 key2:将key1和key2中的值合并添加到destkey中。
+
+### Geospatial(地理位置)
+
+#### 常用API
+
+* GEOADD key longitude latitude membe:
+  * longitude :经度，有效的经度介于 -180 度至 180 度之间。
+  * latitude ：维度，有效的纬度介于 -85.05112878 度至 85.05112878 度之间
+  * 给key中添加一个带有经度和维度的地理位置
+* GEOPOS key member:获取key中member的经纬度
+* GEODIST key member1 member2 unit :返回两个位置之间的距离
+  * unit可选
+    * `m` 表示单位为米。
+    * `km` 表示单位为千米。
+    * `mi` 表示单位为英里。
+    * `ft` 表示单位为英尺
+
+### 事务
+
+* redis的事务是将多个命令进行串行化，防止其他命令进行插队。
+
+### 基本操作
+
+* multi:开启事务，将多个命令放到一个队列中，如果入队的命令有错则之前所有的命令都无法执行。
+* exec:执行所有的操作。如果在multi入队时的命令没有报错，在执行时报错，则不会影响其他正确的命令执行，当前错误的命令这报错。
+* discard:取消事务，放弃执行事务块中的所有命令
+
+### 三特征
+
+* 单独的隔离操作：事务的所有命令都会序列化，按顺序执行。事务的执行过程中不会被其他客户端发送的命令打断。
+* 没有隔离级别的概念:队列中的命令没有提交前不会实际被执行，因为事务提交前任何指令都不会被实际执行。
+* 不保证原子性：事务中如果有一条命令执行失败，其他的命令仍然会被执行，没回回滚。
+
+### 事务冲突
+
+* 悲观锁：在执行每一步操作时都进行加锁。
+* 乐观锁：每次执行的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号等机制。
+  * 使用watch key来进行对key的监控的变化
+  * 使用unwatch来进行取消所有key的监控
+
