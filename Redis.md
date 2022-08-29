@@ -4,7 +4,7 @@
 
 * 安装C 语言
 
-  * **yum** **ins****tall centos-release-scl scl-utils-build**
+  * **yum** **install centos-release-scl scl-utils-build**
 
     **yum install -y devtoolset-8-toolchain**
 
