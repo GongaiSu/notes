@@ -1741,4 +1741,46 @@ spring.rabbitmq.publisher-confirm-type=correlated
   }
   ```
 
-  
+
+## 集群搭建
+
+### 准备工作
+
+* 准备多台安装rabbitmq的服务器，相互之间能ping通
+* 关闭防火墙或者打开需要的端口
+* 配置每台机器的hosts，让各个服务器之间可以通过名称访问
+* 同步.erlang.cookie
+  * .erlang.cookie 文件相当于密钥令牌，集群中的 RabbitMQ 节点需要通过交换密钥令牌以获得相互认证，因此处于同一集群的所有节点需要具有相同的密钥令牌，否则在搭建过程中会出现 Authentication Fail 错误。
+  * 使用scp进行同步
+    * scp /var/lib/rabbitmq/.erlang.cookie 登录名(root)@主机名(rabbitmq133):/var/lib/rabbitmq
+    * 保证每一台服务器上的.erlang.cookie时一致的
+
+### 开始搭建
+
+**需要在除主节点以外的每台机器进行操作**
+
+1. 开启每台服务器上的rabbitmq：`systemctl start rabbitmq-server`
+2. 停止服务：`rabbitmqctl stop_app`
+3. 重置状态：`rabbitmqctl reset`：
+   1. 注意：会删除用户数据
+4. 节点加入：`rabbitmqctl cluster_join rabbit@rabbitmq132(主节点)`
+5. 启动服务：`rabbitmqctl start_app`
+6. 查看集群状态：`rabbitmqctl cluster_status`
+
+### 移除节点
+
+1. 停止服务：`rabbitmqctl stop_app`
+2. 重置状态：`rabbitmqctl reset`：
+   1. 注意：会删除用户数据
+3. 在主节点：`rabbitmqctl forget_cluster_node rabbit@rabbitmq133(被移除节点服务器名)`
+
+### 镜像队列
+
+对于一个节点数为 n 的集群，只需要同步到 n/2+1 个节点上即可。此时需要同时修改镜像策略为 exactly，并指定复制系数 ha-params
+
+```shell
+rabbitmqctl set_policy ha-two "^" '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
+```
+
+![image-20220902000709542](Rabbitmq.assets/image-20220902000709542.png)
+
